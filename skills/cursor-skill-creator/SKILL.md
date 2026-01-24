@@ -1,6 +1,6 @@
 ---
-description: Expert in creating Cursor Agent Skills. Use when the user asks to create a skill, reusable capability, or specialized knowledge.
-name: Skill Creator
+name: cursor-skill-creator
+description: Creates Cursor-specific AI agent skills with SKILL.md format. Use when creating skills for Cursor editor specifically, following Cursor's patterns and directories (.cursor/skills/). Triggers on "cursor skill", "create cursor skill".
 ---
 
 # Cursor Skill Creator
