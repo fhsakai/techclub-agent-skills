@@ -1,6 +1,6 @@
 ---
-description: Expert in creating Cursor Subagents. Use when the user asks to create a subagent, specialized agent, or complex workflow with multiple steps.
-name: Subagent Creator
+name: cursor-subagent-creator
+description: Creates Cursor-specific AI subagents with isolated context for complex multi-step workflows. Use when creating subagents for Cursor editor specifically, following Cursor's patterns and directories (.cursor/agents/). Triggers on "cursor subagent", "cursor agent".
 ---
 
 # Cursor Subagent Creator
