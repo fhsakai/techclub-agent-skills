@@ -1,5 +1,5 @@
 {
-  "name": "@tlc/agent-skills-monorepo",
+  "name": "@tech-leads-club/agent-skills-monorepo",
   "version": "0.0.0",
   "author": "Tech Leads Club",
   "license": "MIT",
@@ -20,14 +20,14 @@
     "build": "nx run-many -t build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "g": "nx g @tlc/skill-plugin:skill",
+    "g": "nx g @tech-leads-club/skill-plugin:skill",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "release": "nx release",
     "release:beta": "nx release --preid beta",
     "release:beta:dry": "nx release --preid beta --dry-run",
     "release:dry": "nx release --dry-run",
-    "start:dev": "npm run dev --workspace=@tlc/agent-skills",
+    "start:dev": "npm run dev --workspace=@tech-leads-club/agent-skills",
     "test": "NODE_OPTIONS='--experimental-vm-modules' nx run-many -t test"
   },
   "repository": {
@@ -48,6 +48,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@nx/devkit": "^22.4.1",
+    "@nx/esbuild": "^22.4.1",
     "@nx/eslint": "^22.4.1",
     "@nx/jest": "22.4.1",
     "@nx/js": "^22.4.1",
@@ -56,6 +57,7 @@
     "@swc/core": "^1.15.10",
     "@types/jest": "^30.0.0",
     "@types/node": "^22",
+    "esbuild": "^0.27.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "jest": "^30.2.0",
