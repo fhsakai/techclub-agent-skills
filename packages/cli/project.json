@@ -1,0 +1,58 @@
+{
+  "name": "@tech-leads-club/agent-skills",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/cli/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "packages/cli/dist",
+        "format": [
+          "esm"
+        ],
+        "bundle": true,
+        "main": "packages/cli/src/index.ts",
+        "tsConfig": "packages/cli/tsconfig.json",
+        "assets": [
+          "packages/cli/*.md",
+          {
+            "glob": "README.md",
+            "input": ".",
+            "output": "."
+          },
+          {
+            "glob": "LICENSE",
+            "input": ".",
+            "output": "."
+          },
+          {
+            "glob": "**/*",
+            "input": "skills",
+            "output": "skills"
+          }
+        ],
+        "generatePackageJson": true,
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {
+          "minify": false
+        },
+        "production": {
+          "minify": true
+        }
+      }
+    }
+  }
+}
