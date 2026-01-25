@@ -2,6 +2,7 @@ import { cpSync, existsSync, mkdirSync, readdirSync, symlinkSync } from 'node:fs
 import { join, relative } from 'node:path'
 
 import { getAgentConfig } from './agents'
+import { getGlobalSkillPath, isGloballyInstalled } from './global-path'
 import type { AgentType, InstallOptions, SkillInfo } from './types'
 
 const TLC_SKILLS_DIR = '.tlc-skills'
@@ -13,6 +14,7 @@ export interface InstallResult {
   method: 'symlink' | 'copy'
   success: boolean
   error?: string
+  usedGlobalSymlink?: boolean
 }
 
 export function installSkills(skills: SkillInfo[], options: InstallOptions): InstallResult[] {
@@ -53,7 +55,21 @@ function installSkillForAgent(
     }
 
     if (method === 'symlink') {
-      // For symlinks, we first copy to .tlc-skills then symlink
+      const globalSkillPath = getGlobalSkillPath(skill.name)
+
+      if (globalSkillPath) {
+        symlinkSync(globalSkillPath, skillTargetPath)
+        return {
+          agent: config.displayName,
+          skill: skill.name,
+          path: skillTargetPath,
+          method,
+          success: true,
+          usedGlobalSymlink: true,
+        }
+      }
+      
+      // Fallback
       const canonicalDir = join(process.cwd(), TLC_SKILLS_DIR)
       const canonicalSkillPath = join(canonicalDir, skill.name)
       if (!existsSync(canonicalDir)) mkdirSync(canonicalDir, { recursive: true })
@@ -70,6 +86,7 @@ function installSkillForAgent(
       path: skillTargetPath,
       method,
       success: true,
+      usedGlobalSymlink: false,
     }
   } catch (error) {
     return {
@@ -91,3 +108,5 @@ export function listInstalledSkills(agent: AgentType, global: boolean): string[]
     .filter((entry) => entry.isDirectory() || entry.isSymbolicLink())
     .map((entry) => entry.name)
 }
+
+export { isGloballyInstalled }
