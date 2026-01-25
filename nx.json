@@ -29,19 +29,18 @@
     ],
     "version": {
       "conventionalCommits": true,
-      "fallbackCurrentVersionResolver": "disk"
+      "currentVersionResolver": "disk"
     },
     "changelog": {
       "automaticFromRef": true,
       "projectChangelogs": true,
       "workspaceChangelog": {
-        "createRelease": false
+        "createRelease": "github"
       }
     },
     "git": {
       "commit": true,
-      "tag": true,
-      "push": false
+      "tag": true
     }
   },
   "targetDefaults": {
@@ -59,6 +58,9 @@
       "dependsOn": [
         "build"
       ],
+      "options": {
+        "packageRoot": "{projectRoot}/dist"
+      },
       "inputs": [
         "production",
         "^production"
