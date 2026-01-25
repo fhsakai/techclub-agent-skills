@@ -1,5 +1,6 @@
 import { Command } from 'commander'
 
+import pkg from '../package.json' with { type: 'json' }
 import { installSkills, removeSkill } from './installer'
 import { runInteractiveInstall } from './prompts/install'
 import { showAvailableSkills } from './prompts/list'
@@ -10,7 +11,7 @@ import type { AgentType } from './types'
 
 const program = new Command()
 
-program.name('tlc-agent-skills').description('Install TLC Agent Skills to your AI coding agents').version('0.0.1')
+program.name('tlc-agent-skills').description('Install TLC Agent Skills to your AI coding agents').version(pkg.version)
 
 program
   .command('install', { isDefault: true })
