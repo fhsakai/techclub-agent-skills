@@ -2,15 +2,18 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { SKILLS_ROOT_DIR } from '@tech-leads-club/core'
+
+import { getSkillCategoryId } from './categories'
 import type { SkillInfo } from './types'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 export function getSkillsDirectory(): string {
-  const devSkillsDir = join(__dirname, '..', '..', '..', 'skills')
+  const devSkillsDir = join(__dirname, '..', '..', '..', SKILLS_ROOT_DIR)
   if (existsSync(devSkillsDir)) return devSkillsDir
-  const pkgSkillsDir = join(__dirname, '..', 'skills')
+  const pkgSkillsDir = join(__dirname, '..', SKILLS_ROOT_DIR)
   if (existsSync(pkgSkillsDir)) return pkgSkillsDir
   throw new Error(`Skills directory not found. Checked: ${devSkillsDir}, ${pkgSkillsDir}`)
 }
@@ -28,10 +31,12 @@ export function discoverSkills(): SkillInfo[] {
     const content = readFileSync(skillMdPath, 'utf-8')
     const { name, description } = parseSkillFrontmatter(content)
 
+    const skillName = name || entry.name
     skills.push({
-      name: name || entry.name,
+      name: skillName,
       description: description || 'No description',
       path: join(skillsDir, entry.name),
+      category: getSkillCategoryId(skillName),
     })
   }
 

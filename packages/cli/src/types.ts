@@ -1,35 +1,4 @@
-export interface AgentConfig {
-  name: string
-  displayName: string
-  description: string
-  skillsDir: string
-  globalSkillsDir: string
-  detectInstalled: () => boolean
-}
-
-export type AgentType =
-  | 'cursor'
-  | 'claude-code'
-  | 'github-copilot'
-  | 'windsurf'
-  | 'cline'
-  | 'aider'
-  | 'codex'
-  | 'gemini'
-  | 'antigravity'
-  | 'roo'
-  | 'kilocode'
-  | 'amazon-q'
-  | 'augment'
-  | 'tabnine'
-  | 'opencode'
-  | 'sourcegraph'
-
-export interface SkillInfo {
-  name: string
-  description: string
-  path: string
-}
+export type { AgentConfig, AgentType, CategoriesConfig, CategoryInfo, SkillInfo } from '@tech-leads-club/core'
 
 export interface InstallOptions {
   global: boolean
