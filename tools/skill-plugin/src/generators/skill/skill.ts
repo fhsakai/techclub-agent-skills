@@ -23,7 +23,7 @@ export async function skillGenerator(tree: Tree, options: SkillGeneratorSchema) 
 ✅ Skill created!
 
 📁 ${skillRoot}/SKILL.md
-🔧 Test: npx @tlc/agent-skills --skill ${normalizedNames.fileName}
+🔧 Test: npx @tech-leads-club/agent-skills --skill ${normalizedNames.fileName}
 💡 Edit SKILL.md and customize the instructions
 `)
 }
