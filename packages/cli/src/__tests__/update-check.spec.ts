@@ -1,13 +1,13 @@
 import { jest } from '@jest/globals'
-import { checkForUpdates, getCurrentVersion } from '../update-check'
 
 jest.unstable_mockModule('package-json', () => ({
   default: jest.fn(),
 }))
 
-const packageJsonMock = (await import('package-json')).default as unknown as jest.Mock<
-  () => Promise<{ version: string }>
->
+const packageJsonModule = await import('package-json')
+const packageJsonMock = packageJsonModule.default as unknown as jest.Mock<() => Promise<{ version: string }>>
+
+const { checkForUpdates, getCurrentVersion } = await import('../update-check')
 
 describe('update-check', () => {
   beforeEach(() => {
