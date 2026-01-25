@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://img.shields.io/npm/v/@tlc/agent-skills?style=flat-square&color=blue" alt="npm version" />
+  <img src="https://img.shields.io/npm/v/@tech-leads-club/agent-skills?style=flat-square&color=blue" alt="npm version" />
   <img src="https://img.shields.io/github/license/tech-leads-club/agent-skills?style=flat-square" alt="license" />
   <img src="https://img.shields.io/github/actions/workflow/status/tech-leads-club/agent-skills/ci.yml?style=flat-square" alt="build status" />
   <img src="https://img.shields.io/badge/node-%3E%3D22-brightgreen?style=flat-square" alt="node version" />
@@ -34,7 +34,7 @@ skills/
 ### Install Skills in Your Project
 
 ```bash
-npx @tlc/agent-skills
+npx @tech-leads-club/agent-skills
 ```
 
 This launches an interactive menu to:
@@ -46,26 +46,26 @@ This launches an interactive menu to:
 
 ```bash
 # Interactive mode (default)
-npx @tlc/agent-skills
+npx @tech-leads-club/agent-skills
 
 # Install globally (to ~/.agent/skills, ~/.claude/skills, etc.)
-npx @tlc/agent-skills install -g
+npx @tech-leads-club/agent-skills install -g
 
 # List available skills
-npx @tlc/agent-skills list
+npx @tech-leads-club/agent-skills list
 
 # Install a specific skill
-npx @tlc/agent-skills install -s spec-driven-dev
+npx @tech-leads-club/agent-skills install -s spec-driven-dev
 
 # Install to specific agents
-npx @tlc/agent-skills install -a antigravity cursor
+npx @tech-leads-club/agent-skills install -a antigravity cursor
 
 # Use copy instead of symlink
-npx @tlc/agent-skills install --copy
+npx @tech-leads-club/agent-skills install --copy
 
 # Show help
-npx @tlc/agent-skills --help
-npx @tlc/agent-skills install --help
+npx @tech-leads-club/agent-skills --help
+npx @tech-leads-club/agent-skills install --help
 ```
 
 ---
@@ -121,7 +121,7 @@ npm run build
 Use the NX generator:
 
 ```bash
-nx g @tlc/skill-plugin:skill my-awesome-skill
+nx g @tech-leads-club/skill-plugin:skill my-awesome-skill
 ```
 
 This creates `skills/my-awesome-skill/SKILL.md` with the correct template structure.
@@ -170,7 +170,7 @@ Brief description.
 ```
 agent-skills/
 ├── packages/
-│   └── cli/                    # @tlc/agent-skills CLI package
+│   └── cli/                    # @tech-leads-club/agent-skills CLI package
 ├── tools/
 │   └── skill-plugin/           # NX generator plugin
 ├── skills/                     # Skill definitions
