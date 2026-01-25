@@ -63,9 +63,19 @@ npx @tech-leads-club/agent-skills install -a antigravity cursor
 # Use copy instead of symlink
 npx @tech-leads-club/agent-skills install --copy
 
+# Remove skills (interactive)
+npx @tech-leads-club/agent-skills remove
+
+# Remove a specific skill
+npx @tech-leads-club/agent-skills remove -s spec-driven-dev
+
+# Remove from global installation
+npx @tech-leads-club/agent-skills remove -g -s spec-driven-dev
+
 # Show help
 npx @tech-leads-club/agent-skills --help
 npx @tech-leads-club/agent-skills install --help
+npx @tech-leads-club/agent-skills remove --help
 ```
 
 ---
