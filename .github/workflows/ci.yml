@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
 
       - name: Start Nx Cloud CI Run
-        run: npx nx-cloud start-ci-run --no-distribution
+        run: npx --yes nx-cloud@19.1.0 start-ci-run --no-distribution
         env:
           NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
 
