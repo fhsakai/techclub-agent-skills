@@ -1,3 +1,14 @@
+## 0.5.0 (2026-01-27)
+
+### 🚀 Features
+
+- enhance versioning configuration with pre-version command and manifest updates ([152abf0](https://github.com/tech-leads-club/agent-skills/commit/152abf0))
+- enhance GitHub App token handling in snapshot and release jobs ([d634a84](https://github.com/tech-leads-club/agent-skills/commit/d634a84))
+
+### ❤️ Thank You
+
+- Felipe Rodrigues @felipfr
+
 ## 0.3.0 (2026-01-26)
 
 ### 🚀 Features
