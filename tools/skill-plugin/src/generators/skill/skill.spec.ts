@@ -10,52 +10,59 @@ describe('skill generator', () => {
 
   beforeEach(() => {
     tree = createTreeWithEmptyWorkspace()
-    tree.write(
-      'skills/categories.json',
-      JSON.stringify({
-        $schema: './categories.schema.json',
-        categories: [{ id: 'development', name: 'Development', priority: 1 }],
-        skills: {},
-      }),
-    )
   })
 
-  it('should run successfully', async () => {
+  it('should create skill at root when no category specified', async () => {
     await skillGenerator(tree, options)
     expect(tree.exists('skills/test/SKILL.md')).toBeTruthy()
   })
 
-  it('should assign skill to existing category', async () => {
+  it('should create skill inside category folder when category specified', async () => {
     await skillGenerator(tree, { name: 'my-skill', category: 'development' })
-    expect(tree.exists('skills/my-skill/SKILL.md')).toBeTruthy()
-    const categoriesContent = tree.read('skills/categories.json', 'utf-8')
-    const categories = JSON.parse(categoriesContent!)
-    expect(categories.skills['my-skill']).toBe('development')
+    expect(tree.exists('skills/(development)/my-skill/SKILL.md')).toBeTruthy()
   })
 
-  it('should create new category when assigning to non-existent', async () => {
+  it('should create category folder if it does not exist', async () => {
     await skillGenerator(tree, { name: 'my-skill', category: 'new-category' })
-    expect(tree.exists('skills/my-skill/SKILL.md')).toBeTruthy()
-    const categoriesContent = tree.read('skills/categories.json', 'utf-8')
-    const categories = JSON.parse(categoriesContent!)
-    expect(categories.skills['my-skill']).toBe('new-category')
-    expect(categories.categories.some((c: { id: string }) => c.id === 'new-category')).toBeTruthy()
+    expect(tree.exists('skills/(new-category)/my-skill/SKILL.md')).toBeTruthy()
   })
 
-  it('should format category name from kebab-case', async () => {
-    await skillGenerator(tree, { name: 'my-skill', category: 'my-awesome-category' })
-    const categoriesContent = tree.read('skills/categories.json', 'utf-8')
-    const categories = JSON.parse(categoriesContent!)
-    const newCategory = categories.categories.find((c: { id: string }) => c.id === 'my-awesome-category')
-    expect(newCategory).toBeDefined()
-    expect(newCategory.name).toBe('My Awesome Category')
+  it('should add skill to existing category folder', async () => {
+    tree.write('skills/(existing-category)/.gitkeep', '')
+    await skillGenerator(tree, { name: 'skill-a', category: 'existing-category' })
+    await skillGenerator(tree, { name: 'skill-b', category: 'existing-category' })
+    expect(tree.exists('skills/(existing-category)/skill-a/SKILL.md')).toBeTruthy()
+    expect(tree.exists('skills/(existing-category)/skill-b/SKILL.md')).toBeTruthy()
   })
 
-  it('should work without category', async () => {
-    await skillGenerator(tree, { name: 'uncategorized-skill' })
-    expect(tree.exists('skills/uncategorized-skill/SKILL.md')).toBeTruthy()
-    const categoriesContent = tree.read('skills/categories.json', 'utf-8')
-    const categories = JSON.parse(categoriesContent!)
-    expect(categories.skills['uncategorized-skill']).toBeUndefined()
+  it('should handle kebab-case skill names', async () => {
+    await skillGenerator(tree, { name: 'my-awesome-skill', category: 'tools' })
+    expect(tree.exists('skills/(tools)/my-awesome-skill/SKILL.md')).toBeTruthy()
+  })
+
+  it('should include description in SKILL.md frontmatter', async () => {
+    await skillGenerator(tree, { name: 'documented-skill', description: 'A well documented skill' })
+    const content = tree.read('skills/documented-skill/SKILL.md', 'utf-8')
+    expect(content).toContain('description: A well documented skill')
+  })
+
+  it('should use placeholder description when not provided', async () => {
+    await skillGenerator(tree, { name: 'basic-skill' })
+    const content = tree.read('skills/basic-skill/SKILL.md', 'utf-8')
+    expect(content).toContain('description: TODO: Add description')
+  })
+
+  it('should throw error if skill already exists', async () => {
+    tree.write('skills/test/SKILL.md', '')
+    await expect(skillGenerator(tree, options)).rejects.toThrow(
+      'A skill with the name "test" already exists in "skills/test".',
+    )
+  })
+
+  it('should throw error if skill already exists in a category', async () => {
+    tree.write('skills/(dev)/test/SKILL.md', '')
+    await expect(skillGenerator(tree, { name: 'test', category: 'dev' })).rejects.toThrow(
+      'A skill with the name "test" already exists in "skills/(dev)/test".',
+    )
   })
 })
