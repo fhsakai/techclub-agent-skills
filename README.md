@@ -38,10 +38,11 @@ Skills are packaged instructions and resources that extend AI agent capabilities
 
 ```
 skills/
-  spec-driven-dev/
-    SKILL.md          ← Main instructions
-    templates/        ← File templates
-    references/       ← On-demand documentation
+  (category-name)/
+    spec-driven-dev/
+      SKILL.md          ← Main instructions
+      templates/        ← File templates
+      references/       ← On-demand documentation
 ```
 
 ## 🚀 Quick Start
@@ -119,6 +120,12 @@ Skills are organized by category for easier navigation.
 | **cursor-skill-creator**    | Cursor-specific skill creation                              |
 | **cursor-subagent-creator** | Cursor-specific subagent creation                           |
 
+### 🌐 Web Automation
+
+| Skill                | Description                                                                       |
+| -------------------- | --------------------------------------------------------------------------------- |
+| **playwright-skill** | Complete browser automation and testing workflow. Detects dev servers and tests UI |
+
 ---
 
 ## 🛠 For Contributors
@@ -174,57 +181,49 @@ nx g @tech-leads-club/skill-plugin:skill my-skill \
 
 The generator will:
 
-- Create `skills/my-skill/SKILL.md` with the correct template structure
-- Assign the skill to the specified category (creating it if needed)
-- If no category is specified, the skill will appear as "Uncategorized"
+- Create the skill folder inside the specified category (e.g., `skills/(development)/my-skill/`)
+- Create `SKILL.md` with the correct template structure
+- If no category is specified, the skill will be created at the root of the `skills/` directory and appear as "Uncategorized" in the CLI.
 
 ### Skill Structure
 
 ```
-skills/my-skill/
-├── SKILL.md              # Required: main instructions
-├── scripts/              # Optional: executable scripts
-├── references/           # Optional: on-demand documentation
-├── templates/            # Optional: file templates
-└── assets/               # Optional: images, files
+skills/
+├── (category-name)/      # Category folder (starts and ends with parenthesis)
+│   └── my-skill/         # Individual skill folder
+│       ├── SKILL.md      # Required: main instructions
+│       ├── scripts/      # Optional: executable scripts
+│       ├── references/   # Optional: on-demand documentation
+│       └── ...
+└── uncategorized-skill/  # Uncategorized skills stay at the root
 ```
 
-### Skill Categories
+Skills are organized into categories using the file-system structure, inspired by the Next.js App Router conventions.
 
-Skills are organized into categories for better navigation in the CLI. Categories are defined in `skills/categories.json`.
+#### Folder Convention
 
-#### Adding a Skill to a Category
+To put a skill in a category, place its folder inside a directory named with parentheses:
 
-Edit `skills/categories.json` and add your skill to the `skills` map:
+- ✅ `skills/(development)/spec-driven-dev/` -> Category: **development**
+- ✅ `skills/(creation)/skill-creator/` -> Category: **creation**
+- ❌ `skills/my-skill/` -> **Uncategorized**
+
+#### Category Metadata
+
+Optional metadata (display name, description, priority) for categories can be defined in `skills/_category.json`:
 
 ```json
 {
-  "categories": [
-    { "id": "development", "name": "Development", "priority": 1 },
-    { "id": "creation", "name": "Skill & Agent Creation", "priority": 2 }
-  ],
-  "skills": {
-    "my-new-skill": "development"
+  "(development)": {
+    "name": "Development",
+    "description": "Skills for software development workflows",
+    "priority": 1
   }
 }
 ```
 
-#### Creating a New Category
-
-Add a new entry to the `categories` array:
-
-```json
-{
-  "id": "my-category",
-  "name": "My Category",
-  "description": "Optional description",
-  "priority": 3
-}
-```
-
-- `id`: Unique identifier (kebab-case)
-- `name`: Display name in the CLI
-- `description`: Optional description
+- `name`: Display name in the CLI (defaults to the folder name without parentheses)
+- `description`: Optional description shown in the CLI
 - `priority`: Display order (lower = first)
 
 ### SKILL.md Format
@@ -264,8 +263,9 @@ agent-skills/
 ├── tools/
 │   └── skill-plugin/           # NX generator plugin
 ├── skills/                     # Skill definitions
-│   ├── categories.json         # Skill category mappings
-│   └── [skill-name]/           # Individual skill folders
+│   ├── (category-name)/        # Categorized skills
+│   ├── _category.json          # Category metadata (optional)
+│   └── [skill-name]/           # Uncategorized skill folders
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml              # CI: lint, test, build
