@@ -1,14 +1,36 @@
 import { formatFiles, generateFiles, names, Tree } from '@nx/devkit'
 import * as path from 'path'
 
-import { SKILLS_ROOT_DIR } from '@tech-leads-club/core'
+import { formatCategoryName, SKILLS_ROOT_DIR } from '@tech-leads-club/core'
 
-import { assignSkillToCategory, categoryExists } from './category-utils'
 import { SkillGeneratorSchema } from './schema'
+
+function categoryIdToFolderName(categoryId: string): string {
+  return `(${categoryId})`
+}
+
+function categoryFolderExists(tree: Tree, categoryId: string): boolean {
+  const folderPath = `${SKILLS_ROOT_DIR}/${categoryIdToFolderName(categoryId)}`
+  return tree.exists(folderPath)
+}
 
 export async function skillGenerator(tree: Tree, options: SkillGeneratorSchema) {
   const normalizedNames = names(options.name)
-  const skillRoot = `${SKILLS_ROOT_DIR}/${normalizedNames.fileName}`
+
+  let skillRoot: string
+  let isNewCategory = false
+
+  if (options.category) {
+    const categoryFolder = categoryIdToFolderName(options.category)
+    skillRoot = `${SKILLS_ROOT_DIR}/${categoryFolder}/${normalizedNames.fileName}`
+    isNewCategory = !categoryFolderExists(tree, options.category)
+  } else {
+    skillRoot = `${SKILLS_ROOT_DIR}/${normalizedNames.fileName}`
+  }
+
+  if (tree.exists(`${skillRoot}/SKILL.md`)) {
+    throw new Error(`A skill with the name "${normalizedNames.fileName}" already exists in "${skillRoot}".`)
+  }
 
   generateFiles(tree, path.join(__dirname, 'files'), skillRoot, {
     ...normalizedNames,
@@ -16,16 +38,19 @@ export async function skillGenerator(tree: Tree, options: SkillGeneratorSchema) 
     tmpl: '',
   })
 
+  await formatFiles(tree)
+
   if (options.category) {
-    const isExisting = categoryExists(tree, options.category)
-    assignSkillToCategory(tree, normalizedNames.fileName, options.category)
-    if (isExisting) console.log(`📁 Assigned to existing category: "${options.category}"`)
+    if (isNewCategory) {
+      console.log(`📁 Created new category folder: "(${options.category})"`)
+      console.log(`   Display name: "${formatCategoryName(options.category)}"`)
+    } else {
+      console.log(`📁 Added to existing category: "${options.category}"`)
+    }
   } else {
     console.log(`ℹ️  No category specified. Skill will appear as "Uncategorized".`)
-    console.log(`   To add a category, edit skills/categories.json`)
+    console.log(`   To add a category: move to skills/(category-name)/${normalizedNames.fileName}`)
   }
-
-  await formatFiles(tree)
 
   console.log(`
 ✅ Skill created!
