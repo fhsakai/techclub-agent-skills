@@ -30,18 +30,9 @@
     ],
     "version": {
       "conventionalCommits": true,
-      "fallbackCurrentVersionResolver": "disk",
-      "preVersionCommand": "npx nx run-many -t build --skip-nx-cache",
-      "manifestRootsToUpdate": [
-        "{projectRoot}",
-        {
-          "path": "{projectRoot}/dist",
-          "preserveLocalDependencyProtocols": false
-        }
-      ]
+      "preVersionCommand": "npx nx run-many -t build --skip-nx-cache"
     },
     "changelog": {
-      "automaticFromRef": true,
       "projectChangelogs": true,
       "workspaceChangelog": {
         "createRelease": "github"
@@ -49,7 +40,8 @@
     },
     "git": {
       "commit": true,
-      "tag": true
+      "tag": true,
+      "baseBranch": "main"
     }
   },
   "targetDefaults": {
