@@ -137,3 +137,112 @@ export async function blueConfirm(message: string, initialValue = false): Promis
 
   return prompt.prompt() as Promise<boolean | symbol>
 }
+
+export interface GroupMultiSelectOptions<T> {
+  [key: string]: Option<T>[]
+}
+
+type ExtendedOption<T> = Option<T> & { isHeader?: boolean; group?: string }
+
+export async function blueGroupMultiSelect<T>(
+  message: string,
+  groupedOptions: GroupMultiSelectOptions<T>,
+  initialValues: T[] = [],
+  allowBack = true,
+): Promise<T[] | symbol> {
+  const flatOptions: ExtendedOption<T>[] = []
+
+  for (const [group, options] of Object.entries(groupedOptions)) {
+    if (options.length === 0) continue
+
+    flatOptions.push({
+      value: `__header_${group}` as unknown as T,
+      label: group,
+      isHeader: true,
+    })
+
+    for (const opt of options) {
+      flatOptions.push({ ...opt, group })
+    }
+  }
+
+  const opt = (
+    option: ExtendedOption<T>,
+    state: 'active' | 'selected' | 'cancelled' | 'inactive' | 'selected-active',
+  ) => {
+    if (option.isHeader) return pc.blue(pc.bold(option.label))
+    const isSelected = state === 'selected' || state === 'selected-active'
+    const isActive = state === 'active' || state === 'selected-active'
+    const checkbox = isSelected ? pc.blue(S_CHECKBOX_ACTIVE) : pc.gray(S_CHECKBOX_INACTIVE)
+    const label = isActive ? pc.blue(option.label) : pc.white(option.label)
+    const hint = isActive && option.hint ? pc.dim(pc.gray(` (${option.hint})`)) : ''
+    return `  ${checkbox} ${label}${hint}`
+  }
+
+  const prompt = new MultiSelectPrompt({
+    options: flatOptions,
+    initialValues,
+    render() {
+      const title = `${pc.blue(S_BAR)}\n${SYMBOL} ${pc.white(pc.bold(message))}\n`
+      const backHint = allowBack ? 'esc = back, ' : ''
+
+      switch (this.state) {
+        case 'submit': {
+          const selected = this.options.filter(
+            (o) => this.value.includes(o.value) && !(o as ExtendedOption<T>).isHeader,
+          )
+
+          return `${title}${pc.blue(S_BAR)}  ${selected
+            .map((o) => pc.blue(String(o.value)))
+            .join(pc.gray(', '))}\n${pc.blue(S_BAR)}`
+        }
+        case 'cancel':
+          return `${title}${pc.blue(S_BAR)}  ${pc.strikethrough(pc.gray('back'))}\n${pc.blue(S_BAR)}`
+        default: {
+          const PAGE_SIZE = 20
+          const total = this.options.length
+
+          let startIndex = Math.max(0, this.cursor - Math.floor(PAGE_SIZE / 2))
+
+          if (startIndex + PAGE_SIZE > total) {
+            startIndex = Math.max(0, total - PAGE_SIZE)
+          }
+
+          const endIndex = Math.min(startIndex + PAGE_SIZE, total)
+          const window = this.options.slice(startIndex, endIndex)
+          const lines = window.map((option, i) => {
+            const absoluteIndex = startIndex + i
+            const optWithHeader = option as ExtendedOption<T>
+            const isSelected = this.value.includes(option.value)
+            const isActive = absoluteIndex === this.cursor
+            const state =
+              isSelected && isActive ? 'selected-active' : isSelected ? 'selected' : isActive ? 'active' : 'inactive'
+
+            return `${pc.blue(S_BAR)}  ${opt(optWithHeader, state)}`
+          })
+
+          if (startIndex > 0) {
+            lines.unshift(`${pc.blue(S_BAR)}  ${pc.gray('↑ ...')}`)
+            if (lines.length > PAGE_SIZE) lines.pop()
+          }
+
+          if (endIndex < total) {
+            lines.push(`${pc.blue(S_BAR)}  ${pc.gray('↓ ...')}`)
+          }
+
+          return `${title}${lines.join('\n')}\n${pc.blue(S_BAR)}\n${pc.blue(S_BAR_END)}  ${pc.dim(pc.gray(`(↑↓ navigate, space select, ${backHint}enter confirm)`))}`
+        }
+      }
+    },
+  })
+
+  let result = (await prompt.prompt()) as T[] | symbol
+
+  if (typeof result === 'symbol') {
+    if (allowBack) return Symbol.for('back')
+    return result
+  }
+
+  result = (result as T[]).filter((val) => !String(val).startsWith('__header_'))
+  return result
+}
