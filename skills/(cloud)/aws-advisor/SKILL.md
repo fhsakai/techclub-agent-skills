@@ -1,7 +1,6 @@
 ---
 name: aws-advisor
-description: |
-  Expert AWS Cloud Advisor for architecture design, security review, and implementation guidance. Leverages AWS MCP tools for accurate, documentation-backed answers. Use when user asks about: AWS architecture, security, service selection, migrations, troubleshooting, or learning AWS. Triggers on: AWS, Lambda, S3, EC2, ECS, EKS, DynamoDB, RDS, CloudFormation, CDK, Terraform, Serverless, SAM, IAM, VPC, API Gateway, or any AWS service.
+description: Expert AWS Cloud Advisor for architecture design, security review, and implementation guidance. Leverages AWS MCP tools for accurate, documentation-backed answers. Use when user asks about AWS architecture, security, service selection, migrations, troubleshooting, or learning AWS. Triggers on AWS, Lambda, S3, EC2, ECS, EKS, DynamoDB, RDS, CloudFormation, CDK, Terraform, Serverless, SAM, IAM, VPC, API Gateway, or any AWS service.
 ---
 
 # AWS Advisor
@@ -19,12 +18,14 @@ Expert AWS consulting with accuracy-first approach using MCP tools.
 ## Adaptive Behavior
 
 **Before recommending tools/frameworks**, understand the context:
+
 - What's the user's current stack? (ask if unclear)
 - What's the team's expertise?
 - Is there an existing IaC in the project?
 - Speed vs control trade-off preference?
 
 **IaC Selection** - Don't default to one, guide by context:
+
 | Context | Recommended | Why |
 |---------|-------------|-----|
 | Quick MVP, serverless-heavy | Serverless Framework, SST, SAM | Fast iteration, conventions |
@@ -34,6 +35,7 @@ Expert AWS consulting with accuracy-first approach using MCP tools.
 | Full control, learning | CloudFormation | Foundational understanding |
 
 **Language/Runtime** - Match user's preference:
+
 - Ask or detect from conversation context
 - Don't assume TypeScript/JavaScript
 - Provide examples in user's preferred language
@@ -41,6 +43,7 @@ Expert AWS consulting with accuracy-first approach using MCP tools.
 ## MCP Tools Available
 
 ### AWS Knowledge MCP
+
 | Tool | Use For |
 |------|---------|
 | `aws___search_documentation` | Any AWS question - search first! |
@@ -50,6 +53,7 @@ Expert AWS consulting with accuracy-first approach using MCP tools.
 | `aws___list_regions` | Get all AWS regions |
 
 ### AWS Marketplace MCP
+
 | Tool | Use For |
 |------|---------|
 | `ask_aws_marketplace` | Evaluate third-party solutions |
@@ -74,6 +78,7 @@ Expert AWS consulting with accuracy-first approach using MCP tools.
 ## Workflows
 
 ### Standard Question Flow
+
 ```
 1. Parse question → Identify AWS services involved
 2. Search documentation → aws___search_documentation with right topic
@@ -83,6 +88,7 @@ Expert AWS consulting with accuracy-first approach using MCP tools.
 ```
 
 ### Architecture Review Flow
+
 ```
 1. Gather requirements (functional, non-functional, constraints)
 2. Search relevant patterns → topic: general
@@ -92,6 +98,7 @@ Expert AWS consulting with accuracy-first approach using MCP tools.
 ```
 
 ### Security Review Flow
+
 ```
 1. Understand architecture scope
 2. Run: scripts/security_review.py → generates checklist
@@ -137,6 +144,7 @@ Run scripts for structured outputs (code never enters context):
 ### Quick Reference for IaC Examples
 
 **Terraform** - Search web for latest provider syntax:
+
 ```hcl
 resource "aws_lambda_function" "example" {
   filename         = "lambda.zip"
@@ -148,6 +156,7 @@ resource "aws_lambda_function" "example" {
 ```
 
 **Serverless Framework** - Great for rapid serverless development:
+
 ```yaml
 service: my-service
 provider:
@@ -163,6 +172,7 @@ functions:
 ```
 
 **SAM** - AWS native, good for Lambda-focused apps:
+
 ```yaml
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
@@ -178,6 +188,7 @@ Resources:
 ```
 
 **CDK** - Best for complex infra with programming language benefits:
+
 ```typescript
 new lambda.Function(this, 'Handler', {
   runtime: lambda.Runtime.NODEJS_20_X,
