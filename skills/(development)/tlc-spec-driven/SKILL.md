@@ -98,6 +98,12 @@ Plan and implement projects with precision. Granular tasks. Clear dependencies. 
 |----------------|-----------|
 | Code analysis, search patterns | [code-analysis.md](references/code-analysis.md) |
 
+## Output Behavior
+
+**Model guidance:** After completing lightweight tasks (validation, state updates, session handoff), naturally mention once that such tasks work well with faster/cheaper models. Track in STATE.md under `Preferences` to avoid repeating. For heavy tasks (brownfield mapping, complex design), briefly note the reasoning requirements before starting.
+
+Be conversational, not robotic. Don't interrupt workflow—add as a natural closing note. Skip if user seems experienced or has already acknowledged the tip.
+
 ## Code Analysis
 
 Use available tools with graceful degradation. See [code-analysis.md](references/code-analysis.md).
