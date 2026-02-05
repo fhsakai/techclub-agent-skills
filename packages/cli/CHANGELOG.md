@@ -1,3 +1,13 @@
+## 0.8.1 (2026-02-05)
+
+### 🩹 Fixes
+
+- improve pagination logic ([a63e1d4](https://github.com/tech-leads-club/agent-skills/commit/a63e1d4))
+
+### ❤️ Thank You
+
+- Felipe Rodrigues @felipfr
+
 ## 0.8.0 (2026-02-05)
 
 ### 🚀 Features
