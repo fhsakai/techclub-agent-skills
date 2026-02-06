@@ -1,218 +1,109 @@
 # AGENTS.md
 
-This file provides guidance to AI coding agents (Antigravity, Claude Code, Cursor, Copilot, etc.) when working with code in this repository.
+> **SYSTEM INSTRUCTION**: This file contains critical context and operational procedures for AI Agents working in this repository. Read this before performing architectural changes or adding new skills.
 
-## Repository Overview
+## 1. Identity & Purpose
 
-A curated collection of skills for AI coding agents. Skills are packaged instructions, scripts, and resources that extend agent capabilities for specialized tasks. This monorepo includes:
+You are working in the **Agent Skills Monorepo**, the central registry of skills for AI coding agents.
+**Goal**: Create, maintain, and distribute high-quality "skills" (packaged instructions) that enable other agents to perform specialized tasks.
 
-- **CLI tool** (`@tech-leads-club/agent-skills`) for installing skills
-- **NX plugin** for generating new skills
-- **Pre-built skills** for common development workflows
+## 2. Architecture (Nx Monorepo)
 
-## Project Structure
+The workspace follows a strict Nx structure.
+**Do not assume file paths.** Use `nx` commands.
 
-```
-agent-skills/
-├── packages/
-│   └── cli/                    # @tech-leads-club/agent-skills CLI
-│       └── src/
-│           ├── index.ts        # Entry point
-│           ├── agents.ts       # Agent detection and mapping
-│           ├── installer.ts    # Symlink/copy logic
-│           ├── prompts.ts      # Interactive menu (@clack/prompts)
-│           ├── skills.ts       # Skill discovery
-│           └── types.ts        # TypeScript types
-├── tools/
-│   └── skill-plugin/           # NX generator plugin
-│       └── src/generators/skill/
-├── skills/                     # Skill definitions
-│   ├── skill-creator/          # Meta-skill for creating skills
-│   ├── spec-driven-dev/        # Specification-driven development workflow
-│   └── ...
-├── .github/workflows/
-│   ├── ci.yml                  # Lint, test, build
-│   └── release.yml             # Version and publish
-│└── nx.json                     # NX configuration
+```mermaid
+graph TD
+    Root --> packages/cli["@tech-leads-club/agent-skills (CLI)"]
+    Root --> packages/skills-catalog["Skills Registry & Definitions"]
+    Root --> tools/skill-plugin["Nx Generator Plugin"]
 ```
 
-## Creating a New Skill
+### Key Components
 
-### Using the NX Generator
+- **CLI** (`packages/cli`): The installer tool. Uses `@clack/prompts` for UI.
+  - **Source of Truth**: `src/agents.ts` defines supported agents/paths.
+  - **Registry**: Fetches `skills-registry.json` from jsDelivr CDN.
+- **Skills Catalog** (`packages/skills-catalog`):
+  - **Definitions**: `skills/{category}/{skill-name}/`
+  - **Generator**: `src/generate-registry.ts` creates the JSON registry.
+  - **Output**: `products/skills-catalog/skills-registry.json` (committed to git).
 
-The preferred way to create skills:
+## 3. Supported Agents (Tiers)
+
+Refer to `packages/cli/src/agents.ts` for the canonical config.
+
+| Tier | Agents | Notes |
+| :--- | :--- | :--- |
+| **1 (Core)** | Cursor, Claude Code, GitHub Copilot, Windsurf, Cline | Most active support & testing. |
+| **2 (Rising)** | Aider, OpenAI Codex, Gemini CLI, Antigravity, Roo Code, Kilo Code | Full installation support. |
+| **3 (Ent)** | Amazon Q, Augment, Tabnine, OpenCode, Sourcegraph Cody | Specialized/Enterprise usage. |
+
+## 4. Operational Procedures
+
+### A. Creating a New Skill
+
+**ALWAYS** use the Nx generator to ensure structure compliance.
 
 ```bash
-nx g @tech-leads-club/skill-plugin:skill my-skill
+nx g @tech-leads-club/skill-plugin:skill {skill-name}
+# Example: nx g @tech-leads-club/skill-plugin:skill api-designer
 ```
 
-This creates `skills/my-skill/SKILL.md` with the correct template.
+- **Structure**: `skills/{skill-name}/SKILL.md` (+ `scripts/`, `assets/`)
 
-### Skill Structure
+- **Metadata**: Ensure frontmatter (`name`, `description`) is accurate.
+- **Categories**: Place in appropriate folder (e.g., `(web)`, `(devops)`).
 
-```
-skills/
-  {skill-name}/             # kebab-case directory name
-    SKILL.md                # Required: main instructions
-    scripts/                # Optional: executable scripts
-    references/             # Optional: docs loaded on-demand
-    templates/              # Optional: file templates
-    assets/                 # Optional: images, files
-```
+### B. Updating the Registry
 
-### Naming Conventions
+The registry (`skills-registry.json`) is the database used by the CLI.
+**Trigger**: When adding/renaming/deleting skills.
 
-- **Skill directory**: `kebab-case` (e.g., `api-designer`, `code-reviewer`)
-- **SKILL.md**: Always uppercase, always this exact filename
-- **Scripts**: `kebab-case.sh` or `kebab-case.ts`
-
-### SKILL.md Format
-
-```markdown
----
-name: {skill-name}
-description: {What it does} + {When to use it}. Include trigger phrases.
----
-
-# {Skill Title}
-
-{Brief description}
-
-## Process
-
-1. {Step 1}
-2. {Step 2}
-3. ...
-
-## Examples (optional but recommended)
-
-{Concrete input → output examples}
+```bash
+npm run generate:registry
+# Output: packages/skills-catalog/skills-registry.json
 ```
 
-### Best Practices for Context Efficiency
+- **CI/CD**: Auto-runs on release. Only commit if content changes (version/timestamp excluded).
 
-Skills are loaded on-demand. The full `SKILL.md` loads into context only when the agent decides the skill is relevant.
-
-- **Keep SKILL.md under 500 lines** — put detailed reference material in separate files
-- **Write specific descriptions** — helps the agent know exactly when to activate the skill
-- **Use progressive disclosure** — reference supporting files that get read only when needed
-- **Prefer scripts over inline code** — script execution doesn't consume context
-- **Assume the agent is smart** — challenge each piece: "Does this justify its token cost?"
-
-### What NOT to Include in Skills
-
-- README.md, CHANGELOG.md, INSTALLATION_GUIDE.md
-- User-facing documentation
-- Testing/setup procedures
-
-Skills are for agents, not humans.
-
-## Development Commands
+### C. Testing the CLI
 
 ```bash
 # Install dependencies
 npm ci
 
-# Build all packages
+# Build (required for CLI execution)
 npm run build
 
-# Run tests
-npm run test
-
-# Lint code
-npm run lint
-
-# Format code
-npm run format
-
-# Generate a new skill
-nx g @tech-leads-club/skill-plugin:skill {skill-name}
-
-# Test the CLI locally
-npm run dev --workspace=@tech-leads-club/agent-skills
-
-# Dry-run release
-npm run release:dry
-
-# Release (CI only)
-npm run release
+# Run locally (simulates user installation)
+SKILLS_CDN_REF=main npm run dev -- install
 ```
 
-## Agent-Specific Paths
+## 5. Skill Engineering Guidelines (Context Optimization)
 
-The CLI installs skills to these locations:
+Skills must be explicitly optimized for agent consumption.
 
-| Agent          | Local Path          | Global Path                            |
-| -------------- | ------------------- | -------------------------------------- |
-| Antigravity    | `.agent/skills/`    | `~/.gemini/antigravity/global_skills/` |
-| Claude Code    | `.claude/skills/`   | `~/.claude/skills/`                    |
-| Cursor         | `.cursor/skills/`   | `~/.cursor/skills/`                    |
-| GitHub Copilot | `.github/skills/`   | `~/.copilot/skills/`                   |
-| OpenCode       | `.opencode/skills/` | `~/.opencode/skills/`                  |
+1. **High Density, Low Noise**:
+    - ❌ Bad: "First, you might want to try checking the file system..."
+    - ✅ Good: "1. List files in target directory."
+2. **Progressive Disclosure**:
+    - Keep `SKILL.md` < 500 lines.
+    - Offload reference tables/docs to `references/` or `templates/`.
+    - Agents read the prompt -> Decide to load extra files -> Execute.
+3. **Imperative Actions**:
+    - Use active verbs: "Analyze", "Generate", "Validate".
+    - Avoid philosophical or educational content unless it's a "Guide" skill.
 
-## Testing Skills
+## 6. Commit Strategy (Conventional Commits)
 
-After creating or modifying a skill:
+- `feat: add new skill {name}`
+- `fix: update registry logic`
+- `chore: maintenance`
+- **Releases**: Handled automatically by Nx Release based on commit messages.
 
-1. Install it locally: `npx @tech-leads-club/agent-skills --skill {skill-name}`
-2. Start a new agent session
-3. Test with prompts that should trigger the skill
-4. Iterate based on real usage
+## 7. Useful Nx Tools for Agents
 
-## Commit Convention
-
-This repository uses [Conventional Commits](https://www.conventionalcommits.org/):
-
-- `feat:` — new feature (minor version bump)
-- `fix:` — bug fix (patch version bump)
-- `docs:` — documentation only
-- `chore:` — maintenance
-- `feat!:` or `BREAKING CHANGE:` — breaking change (major version bump)
-
-## Recommended Tools (MCP)
-
-This repository is an **Nx Workspace**. To significantly improve AI agent performance, understanding of the project structure, and task execution, it is highly recommended to use the **Nx MCP Server**.
-
-### Capabilities
-
-- **Workspace Structure Understanding**: Deep architectural awareness of the monorepo.
-- **Improved Task Execution**: Ability to list and run Nx targets (lint, test, build) with context.
-- **Enhanced Code Generation**: AI-powered generator suggestions.
-
-### Setup Instructions
-
-**Automatic Setup (Recommended):**
-Run this command to automatically configure your Nx workspace for AI agents (creates/updates `AGENTS.md`, `CLAUDE.md`, etc):
-
-```bash
-npx nx configure-ai-agents
-```
-
-**Manual Configuration:**
-If you need to manually configure your MCP client (e.g., Claude Desktop, Cursor), use the following settings:
-
-```json
-{
-  "mcpServers": {
-    "nx-mcp": {
-      "command": "npx",
-      "args": ["-y", "nx-mcp@latest"]
-    }
-  }
-}
-```
-
-<!-- nx configuration start-->
-<!-- Leave the start & end comments to automatically receive updates. -->
-
-# General Guidelines for working with Nx
-
-- When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
-- You have access to the Nx MCP server and its tools, use them to help the user
-- When answering questions about the repository, use the `nx_workspace` tool first to gain an understanding of the workspace architecture where applicable.
-- When working in individual projects, use the `nx_project_details` mcp tool to analyze and understand the specific project structure and dependencies
-- For questions around nx configuration, best practices or if you're unsure, use the `nx_docs` tool to get relevant, up-to-date docs. Always use this instead of assuming things about nx configuration
-- If the user needs help with an Nx configuration or project graph error, use the `nx_workspace` tool to get any errors
-- For Nx plugin best practices, check `node_modules/@nx/<plugin>/PLUGIN.md`. Not all plugins have this file - proceed without it if unavailable.
-
-<!-- nx configuration end-->
+- `available_plugins`: List Nx capabilities.
+- `nx_docs`: Query Nx configuration documentation.
+- `project_details`: Analyze specific package dependencies.
