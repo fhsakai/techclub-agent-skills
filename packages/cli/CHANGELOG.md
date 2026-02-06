@@ -1,3 +1,13 @@
+## 0.10.0 (2026-02-06)
+
+### 🚀 Features
+
+- enhance registry fetching with fallback and improved concurrency ([b2aa436](https://github.com/tech-leads-club/agent-skills/commit/b2aa436))
+
+### ❤️ Thank You
+
+- Felipe Rodrigues @felipfr
+
 ## 0.9.1 (2026-02-06)
 
 ### 🩹 Fixes
