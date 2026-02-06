@@ -144,8 +144,9 @@ jobs:
 
       - name: Commit Registry if Changed
         run: |
-          if ! git diff --quiet skills-registry.json 2>/dev/null; then
-            git add skills-registry.json
+          REGISTRY_PATH="packages/skills-catalog/skills-registry.json"
+          if ! git diff --quiet "$REGISTRY_PATH" 2>/dev/null; then
+            git add "$REGISTRY_PATH"
             git commit -m "chore: update skills-registry.json" || true
           fi
 
