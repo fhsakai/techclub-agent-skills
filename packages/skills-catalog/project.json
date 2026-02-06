@@ -17,7 +17,7 @@
         "{projectRoot}/skills/**/*"
       ],
       "outputs": [
-        "{workspaceRoot}/skills-registry.json"
+        "{projectRoot}/skills-registry.json"
       ]
     },
     "validate": {
