@@ -54,10 +54,11 @@ const PATHS = {
 
 const URLS = {
   get cdnBase() {
-    return `https://cdn.jsdelivr.net/gh/tech-leads-club/agent-skills@v${CONFIG.cliVersion}`
+    const ref = process.env.SKILLS_CDN_REF ?? `v${CONFIG.cliVersion}`
+    return `https://cdn.jsdelivr.net/gh/tech-leads-club/agent-skills@${ref}`
   },
   get registry() {
-    return `${this.cdnBase}/skills-registry.json`
+    return `${this.cdnBase}/packages/skills-catalog/skills-registry.json`
   },
   get skillsBase() {
     return `${this.cdnBase}/packages/skills-catalog/skills`
@@ -217,10 +218,8 @@ export async function getSkillMetadata(skillName: string): Promise<SkillMetadata
 
 export async function ensureSkillDownloaded(skillName: string): Promise<string | null> {
   if (isSkillCached(skillName)) return getSkillCachePath(skillName)
-
   const metadata = await getSkillMetadata(skillName)
   if (!metadata) return null
-
   return downloadSkill(metadata)
 }
 
