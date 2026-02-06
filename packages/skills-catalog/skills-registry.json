@@ -51,9 +51,6 @@
       "description": "Skills for browser automation and web testing",
       "priority": 10
     },
-    "webautomation": {
-      "name": "Webautomation"
-    },
     "uncategorized": {
       "name": "Uncategorized",
       "description": "Skills without a specific category",
